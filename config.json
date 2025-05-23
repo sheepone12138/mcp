@@ -1,0 +1,36 @@
+{"mcpServers": {
+    "RedNote MCP":
+        {"command":"rednote-mcp",
+        "args" : ["--stdio"]
+        }
+    ,
+    "filesystem": {
+        "disabled": false,
+        "timeout": 60,
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "C:\\Users\\22689\\Desktop",
+          "C:\\Users\\22689\\Downloads",
+          "E:\\tsinghua",
+          "C:\\Users\\22689\\AppData\\Roaming\\Code\\User\\globalStorage\\saoudrizwan.claude-dev\\settings"
+        ]
+      },
+      "desktop-commander": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@wonderwhy-er/desktop-commander"
+        ]
+      },
+      "postgres": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-postgres",
+          "postgresql://localhost/mydb"
+        ]
+      }
+    }
+}
