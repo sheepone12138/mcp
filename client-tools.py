@@ -1,3 +1,60 @@
+import subprocess
+import sys
+import argparse
+
+def run_python_file(interpreter_path, script_path, script_args=None):
+    """
+    在指定的Python环境中运行Python文件
+    
+    参数:
+    interpreter_path (str): Python解释器的路径
+    script_path (str): 要运行的Python脚本的路径
+    script_args (list, 可选): 传递给Python脚本的参数列表
+    
+    返回:
+    int: 子进程的返回码
+    """
+    # 构建命令
+    command = [interpreter_path, script_path]
+    
+    # 添加脚本参数（如果有）
+    if script_args:
+        command.extend(script_args)
+    
+    try:
+        # 执行命令
+        result = subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # 打印标准输出
+        if result.stdout:
+            print("标准输出:")
+            print(result.stdout)
+        
+        return result.returncode
+    
+    except subprocess.CalledProcessError as e:
+        # 打印错误信息
+        print(f"错误: 脚本返回非零退出状态 {e.returncode}")
+        if e.stderr:
+            print("错误输出:")
+            print(e.stderr)
+        return e.returncode
+    
+    except FileNotFoundError:
+        print(f"错误: 指定的Python解释器 '{interpreter_path}' 未找到")
+        return 1
+    
+    except Exception as e:
+        print(f"错误: 执行脚本时发生意外错误: {e}")
+        return 1
+    
+
 import asyncio # 用于导入异步IO库，用于支持异步编程
 import json # 用于导入JSON库，用于处理JSON数据
 import sys # 用于处理命令行参数
@@ -13,6 +70,10 @@ from openai import OpenAI # Openai SDK
 # 环境变量加载相关
 from dotenv import load_dotenv # 导入环境变量加载工具
 import os # 用于获取环境变量值
+
+# 从promt.txt文件中读取系统提示词
+with open("prompt.txt", "r", encoding="utf-8") as f:
+    prompt = f.read().strip()  # 读取文件内容并去除首尾空白字符
 
 load_dotenv()  # 加载 .env 文件中的环境变量
 
@@ -85,7 +146,7 @@ class DeepSeekMCPClient:
         messages = [
             {
                 "role": "system", # 系统角色，用于设定AI的行为准则
-                "content": "你可以通过调用合适的工具来帮助用户解决问题，请根据用户的需求选择最合适的工具。如果不需要调用工具，就用自然语言与用户交互，此时与正常的对话流程无异。"
+                "content": prompt # 系统提示词，指导模型如何回答问题
             }
         ]
         messages.extend(query) # 将用户的问题添加到消息列表中
@@ -293,6 +354,32 @@ class DeepSeekMCPClient:
                 response,re = await self.process_query(history)
                 print("\n"+re)
                 history.extend([{"role": "assistant", "content": response[0].replace('</think>\n\n', '')}])
+                # 提取并保存文档中 ```python 和 ``` 之间的内容
+                try:
+                    with open("output.py", "w", encoding="utf-8") as f:
+                        print(f"输出文件内容: {re}")
+                        inside_code_block = False  # 标记是否在代码块中
+                        for line in re.split("\n"):  # 将内容按行分割
+                            if line.startswith("```python"):
+                                inside_code_block = True  # 开始代码块
+                                continue
+                            if line.startswith("```") and inside_code_block:
+                                inside_code_block = False  # 结束代码块
+                                continue
+                            if inside_code_block:
+                                f.write(line + "\n")  # 写入代码块内容
+                    print("\n============输出文件内容成功!================\n")
+                    # 运行输出的 Python 文件
+                    try:
+                        interpreter_path = "E:/tsinghua/aconda/envs/s/python.exe"  # 获取当前 Python 解释器的路径
+                        script_path = "output.py"  # 输出的 Python 文件路径
+                        return_code = run_python_file(interpreter_path, script_path)
+                        if return_code == 0:
+                            print("输出的 Python 文件执行成功!")
+                    except Exception as e:
+                        print(f"运行输出的 Python 文件失败: {str(e)}")
+                except Exception as e:
+                    print(f"\n输出文件内容失败: {str(e)}")
                 print("\n============历史消息================\n")
                 print(history)
 
@@ -315,7 +402,7 @@ async def main():
     client = DeepSeekMCPClient()
     try:
         # 连接到MCP服务器
-        with open("config.json", "r") as f:
+        with open("config.json", "r", encoding='utf-8') as f:
             config = json.load(f)
             for server_name, server_info in config["mcpServers"].items():
                 print(f"正在连接到服务器: {server_name}")
@@ -338,10 +425,21 @@ if __name__ == "__main__":
     # 运行主函数
     asyncio.run(main())
 
+    input = input("是否运行xodr文件? (y/n): ")
+    if input.lower() == 'y':
+
+        # 运行 cd 命令和 esmini 命令
+        # 注意：在 Windows 上，cd 命令不能直接在 subprocess 中使用，需要使用 shell=True 或者直接在命令行中执行
+        subprocess.run(
+            [r"E:/tsinghua/esmini/bin/odrviewer.exe", "--odr", r"E:/tsinghua/code/mcp-client/xodr/output0.xodr"],
+            check=True
+        )
+        print("已运行 xodr 文件。")
+    else:
+        print("已退出，未运行 xodr 文件。")
 # 使用说明
 # 激活虚拟环境（如果尚未激活）
 # .venv\Scripts\activate
 
 # 运行 MCP 客户端，连接到天气查询 MCP 服务器（示例）
 # uv run client-tools.py 
-
