@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <OpenDRIVE>
-    <header name="cross_road" revMajor="1" revMinor="5" date="2025-07-18 15:49:43.227666" north="0.0" south="0.0" east="0.0" west="0.0"/>
+    <header name="cross_roads" revMajor="1" revMinor="5" date="2025-08-05 11:22:20.283092" north="0.0" south="0.0" east="0.0" west="0.0"/>
     <road rule="RHT" id="1" junction="-1" length="100">
         <link>
             <successor elementType="junction" elementId="100"/>
@@ -501,7 +501,7 @@
             </laneSection>
         </lanes>
     </road>
-    <junction name="cross_junction" id="100" type="default">
+    <junction name="cross_roads_junction" id="100" type="default">
         <connection incomingRoad="2" id="0" contactPoint="end" connectingRoad="100">
             <laneLink from="2" to="-2"/>
             <laneLink from="1" to="-1"/>

@@ -1,180 +1,180 @@
 你可以根据用户指令决定是否调用工具和调用哪个工具，如果没有需要调用的工具请用自然语言和用户回答
 使用下面提示词进行生成，只使用圆形交叉口，不使用局部交叉口
 [
-    {
+    
         "id": 1,
         "input": "导入必要的模块和类：",
         "output": "from scenariogeneration import xosc, xodr, prettyprint, ScenarioGenerator\nimport pyclothoids as pcloth\nimport os"
-    },
-    {
+    ,
+    
         "id": 2,
         "input": "创建一个新的ScenarioGenerator实例：",
         "output": "class Scenario(ScenarioGenerator):\n    def __init__(self):\n        super().__init__()"
-    },    
-    {
+    ,    
+    
         "id": 3,
         "input": "创建道路函数：",
         "output": "    def road(self, **kwargs):"
-    },
-    {
+    ,
+    
         "id": 4,
         "input": "创建道路 1（包含30米的直线；和起始曲率：-0.00001，结束曲率：-0.035，长度200米的螺旋线）：",
         "output": "        road1 = xodr.create_road([xodr.Line(30), xodr.Spiral(-0.00001, -0.035, 200)], 1, 2, 2)"
-    },
-    {
+    ,
+    
         "id": 5,
         "input": "创建道路 2 （均为长度100米的直线，道路id:2，左边车道数为：2，右边车道数为：2）：",
         "output": "        road2 = xodr.create_road([xodr.Line(100)], 2, 2, 2)\nroad3 = xodr.create_road([xodr.Line(100)], 3, 2, 2)"
-    },
-    {
+    ,
+    
         "id": 6,
         "input": "创建道路 3（均为长度100米的直线，道路id:3，左边车道数为：2，右边车道数为：2）：",
         "output": "        road3 = xodr.create_road([xodr.Line(100)], 3, 2, 2)"
     
-    },
-    {
+    ,
+    
         "id": 7,
         "input": "创建公共交叉口(圆形交叉口和局部坐标系交叉口都是用这个方法)（id为：100，名字为：my junc）：",
         "output": "        jc = xodr.CommonJunctionCreator(100, \"my junc\")"
-    },
-    {
+    ,
+    
         "id": 8,
         "input": "交叉口连接参数(为圆形坐标系)：(要添加的道路对象为：road1，圆形交叉口半径：20，道路角度为：2 * np.pi / 4，连接类型为：successor)：",
         "output": "            junction_creator.add_incoming_road_circular_geometry(road=road1, radius=20, angle=2 * np.pi / 4, road_connection=\"successor\")"
-    },
-    {
+    ,
+    
         "id": 9,
         "input": "将道路1，2连接起来如果没有特指相连接的行车道，可以只使用前两个参数)：",
         "output": "        jc.add_connection(1, 2)"
-    },
-    {
+    ,
+    
         "id": 10,
         "input": "将道路3，2连接起来如果没有特指相连接的行车道，可以只使用前两个参数)：",
         "output": "        jc.add_connection(3, 2)"
-    },
-    {
+    ,
+    
         "id": 11,
         "input": "将道路1，3连接起来(如果没有特指相连接的行车道，可以只使用前两个参数)：",
         "output": "        jc.add_connection(1, 3)"
-    },
-    {
+    ,
+    
         "id": 12,
         "input": "创建道路4(几何形状为可调整的，长度100米，左边车道数为：2，右边车道数为：2)：",
         "output": "        road4 = xodr.create_road(xodr.AdjustablePlanview(100), 4, 2, 2)"
-    },
-    {
+    ,
+    
         "id": 13,
         "input": "为道路4设置一个前置道路(当这个道路和交叉点或者其他道路连接起来后不可以使用这个)(连接元素为road，道路id为：2，连接点为该道路的end处)：",
         "output": "        road4.add_predecessor(xodr.ElementType.road, 2, xodr.ContactPoint.end)"
-    },
-    {
+    ,
+    
         "id": 14,
         "input": "为道路4设置一个后置道路(当这个道路和交叉点或者其他道路连接起来后不可以使用这个)(连接元素为road，道路id为：1，连接点为该道路的start处)：",
         "output": "        road4.add_successor(xodr.ElementType.road, 1, xodr.ContactPoint.start)"
-    },
-    {
+    ,
+    
         "id": 15,
         "input": "为道路2设置一个后置道路(连接元素为road，道路id为：4，连接点为该道路的start处)：",
         "output": "        road2.add_successor(xodr.ElementType.road, 4, xodr.ContactPoint.start)"
-    },
-    {
+    ,
+    
         "id": 16,
         "input": "为道路1设置一个前置道路(连接元素为road，道路id为：4，连接点为该道路的end处)：",
         "output": "        road1.add_predecessor(xodr.ElementType.road, 4, xodr.ContactPoint.end)"
-    },
-    {
+    ,
+    
         "id": 17,
         "input": "创建一个名为 \"my road\" 的 OpenDRIVE 主对象:",
         "output": "        odr = xodr.OpenDrive(\"my road\")"
-    },
-    {
+    ,
+    
         "id": 18,
         "input": "将道路1添加到 OpenDRIVE 主对象中：",
         "output": "        odr.add_road(road1)"
-    },
-    {
+    ,
+    
         "id": 19,
         "input": "将道路2添加到 OpenDRIVE 主对象中：",
         "output": "        odr.add_road(road2)"
-    },
-    {
+    ,
+    
         "id": 20,
         "input": "将道路3添加到 OpenDRIVE 主对象中：",
         "output": "        odr.add_road(road3)"
-    },
-    {
+    ,
+    
         "id": 21,
         "input": "将道路4添加到 OpenDRIVE 主对象中：",
         "output": "        odr.add_road(road4)"
-    },
-    {
+    ,
+    
         "id": 22,
         "input": "将交叉口添加到 OpenDRIVE 主对象中：",
         "output": "        odr.add_junction_creator(jc)"
-    },
-    {
+    ,
+    
         "id": 23,
         "input": "根据之前设置的道路连接关系（前驱和后继），自动计算和调整所有道路和车道的几何位置，确保它们在物理上正确连接:",
         "output": "        odr.adjust_roads_and_lanes()"
-    },
-    {
+    ,
+    
         "id": 24,
         "input": "返回构建好的 OpenDRIVE 道路网络对象：",
         "output": "        return odr"
-    },
-    {
+    ,
+    
         "id": 25,
         "input": "主程序入口:",
         "output": "if __name__ == \"__main__\":"
-    },
-    {
+    ,
+    
         "id": 26,
         "input": "创建场景对象：",
         "output": "    sce = Scenario()"
-    },
-    {
+    ,
+    
         "id": 27,
         "input": "打印 XML 内容(返回场景中的road对象,get_element()获取该对象的 XML 表示形式,prettyprint()函数将 XML 内容以格式化的方式打印输出，便于查看和调试)：",
         "output": "    prettyprint(sce.road().get_element())"
-    },
-    {
+    ,
+    
         "id": 28,
         "input": "生成并保存场景文件(sce.generate()方法将场景导出为文件,\".\"参数指定导出路径为当前目录)：",
         "output": "    sce.generate(.)"
-    },
-    {
+    ,
+    
         "id": 29,
         "input": "创建起点参数为(0,0)，方位角为0的起点：",
         "output": "        start_x = 0\n        start_y = 0\n        start_h = 0"
-    },
-    {
+    ,
+    
         "id": 30,
         "input": "创建终点参数为(150,20)，方位角为0的终点：",
         "output": "        end_x = 150\n        end_y = 20\n        end_h = 0"
-    },
-    {
+    ,
+    
         "id": 31,
         "input": "使用 G2 连续算法求解从起点到终点的平滑过渡曲线(起点参数为(start_x,start_y),方向角为：start_h,起点曲率为xodr.STD_START_CLOTH)；(终点参数为(start_x,start_y),方向角为：start_h,终点曲率为xodr.STD_START_CLOTH)：",
         "output": "        clothoid = pcloth.G2Continuous(start_x, start_y, start_h, xodr.STD_START_CLOTH, end_x, end_y, end_h, xodr.STD_START_CLOTH)"
-    },
-    {
+    ,
+    
         "id": 32,
         "input": " 创建道路几何元素(将求解得到的回旋曲线 (Clothoid) 转换为 OpenDRIVE 中的 Spiral 元素):",
         "output": "        roadgeoms = [xodr.Spiral(x.KappaStart, x.KappaEnd, length=x.length) for x in clothoids]"
-    },
-    {
+    ,
+    
         "id": 33,
         "input": "创建道路对象(使用 OpenDRIVE 的 create_road 函数创建道路，包含之前求解得到的回旋曲线，id为：1，左边车道数为：2，右边车道数为：2):",
         "output": "        road = xodr.create_road(roadgeoms, 1, 2, 2)"
-    },
-    {
+    ,
+    
         "id": 34,
         "input": "在道路1上添加一个交通信号（xodr.Signal()：创建一个信号对象,s=98.0表示该信号位于道路起点沿中心线向前 98 米处。t=-4：信号相对于道路中心线的横向向左偏移4米。country=\"US\"：指定信号遵循的美国标准。Type=\"R1\"：信号类型代码，根据美国标准，R1表示停车标志(红绿灯为1000001)。subtype=\"1\"：信号子类型代码）：",
         "output": "        road1.add_signal(xodr.Signal(s=98.0, t=-4, country=\"USA\", Type=\"R1\", subtype=\"1\"))"
-    },
-    {
+    ,
+    
         "id": 35,
         "input": "将“道路3的1车道”和“道路2的3车道”连接起来(如果没有特指相连接的行车道，可以只使用前两个参数)：",
         "output": "        jc.add_connection(road_one_id=3,road_two_id=2,lane_one_id=1,lane_two_id=3)"
-    }
+    
 ]

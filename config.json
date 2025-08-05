@@ -1,40 +1,5 @@
 {
   "mcpServers": {
-<<<<<<< HEAD
-    "filesystem": {
-        "disabled": false,
-        "timeout": 60,
-        "command": "npx",
-        "args": [
-          "-y",
-          "@modelcontextprotocol/server-filesystem",
-          "C:/Users/22689/Desktop",
-          "C:/Users/22689/Downloads",
-          "E:/tsinghua",
-          "C:/Users/22689/AppData/Roaming/Code/User/globalStorage/saoudrizwan.claude-dev/settings"
-        ]
-      },
-      "fastadmin": {
-        "command": "uv",
-        "args": [
-          "--directory",
-          "./fastapi",
-          "run",
-          "api.py"
-        ],
-        "disabled": false,
-=======
-      "fastadmin": {
-        "command": "uv",
-        "args": [
-          "--directory",
-          "./fastapi",
-          "run",
-          "api.py"
-        ],
-        "disabled": false,
->>>>>>> 79583af64d6f7a87ef202bfd85e0f27a83322cbc
-        "alwaysAllow": []
-      }
+
   }
 }
