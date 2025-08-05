@@ -175,7 +175,7 @@ class DeepSeekMCPClient:
                 messages=messages, # 消息历史（系统提示和用户问题）
                 tools=available_tools if available_tools else None, # 可用的工具列表
                 temperature=0.5, # 温度参数，控制响应的随机性(0.5是中等随机性)
-                max_tokens=4096 # 最大生成令牌数，限制响应长度
+                max_tokens=4096, # 最大生成令牌数，限制响应长度
                 )
             # 打印模型响应，便于调试
             print(f"DeepSeek API 响应: {response}\n--------------------------------\n")

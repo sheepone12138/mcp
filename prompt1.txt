@@ -1,0 +1,174 @@
+# OpenDRIVE 场景生成代码提示词
+
+## 使用说明
+- 根据用户指令决定是否调用工具和调用哪个工具
+- 如果没有需要调用的工具请用自然语言和用户回答
+- **重要：只使用圆形交叉口，不使用局部交叉口**
+
+## 1. 基础设置
+
+### 1.1 模块导入
+```python
+from scenariogeneration import xosc, xodr, prettyprint, ScenarioGenerator
+import pyclothoids as pcloth
+import os
+```
+
+### 1.2 场景类创建
+```python
+class Scenario(ScenarioGenerator):
+    def __init__(self):
+        super().__init__()
+    
+    def road(self, **kwargs):
+        # 道路创建逻辑
+```
+
+## 2. 道路创建
+
+### 2.1 基础道路创建
+```python
+# 创建包含直线和螺旋线的道路
+road1 = xodr.create_road([xodr.Line(30), xodr.Spiral(-0.00001, -0.035, 200)], 1, 2, 2)
+
+# 创建直线道路
+road2 = xodr.create_road([xodr.Line(100)], 2, 2, 2)
+road3 = xodr.create_road([xodr.Line(100)], 3, 2, 2)
+
+# 创建可调整几何形状的道路
+road4 = xodr.create_road(xodr.AdjustablePlanview(100), 4, 2, 2)
+```
+
+### 2.2 道路连接关系设置
+```python
+# 设置前置道路
+road4.add_predecessor(xodr.ElementType.road, 2, xodr.ContactPoint.end)
+road1.add_predecessor(xodr.ElementType.road, 4, xodr.ContactPoint.end)
+
+# 设置后置道路
+road4.add_successor(xodr.ElementType.road, 1, xodr.ContactPoint.start)
+road2.add_successor(xodr.ElementType.road, 4, xodr.ContactPoint.start)
+```
+
+## 3. 交叉口创建（圆形交叉口）
+
+### 3.1 交叉口基础设置
+```python
+# 创建公共交叉口
+jc = xodr.CommonJunctionCreator(100, "my junc")
+
+# 圆形交叉口连接参数
+junction_creator.add_incoming_road_circular_geometry(
+    road=road1, 
+    radius=20, 
+    angle=2 * np.pi / 4, 
+    road_connection="successor"
+)
+```
+
+### 3.2 道路连接
+```python
+# 基础道路连接（如果没有特指相连接的行车道，可以只使用前两个参数）
+jc.add_connection(1, 2)
+jc.add_connection(3, 2)
+jc.add_connection(1, 3)
+
+# 指定车道连接
+jc.add_connection(road_one_id=3, road_two_id=2, lane_one_id=1, lane_two_id=3)
+```
+
+## 4. 高级功能
+
+### 4.1 平滑曲线生成
+```python
+# 设置起点和终点参数
+start_x = 0
+start_y = 0
+start_h = 0
+end_x = 150
+end_y = 20
+end_h = 0
+
+# 使用 G2 连续算法求解平滑过渡曲线
+clothoid = pcloth.G2Continuous(
+    start_x, start_y, start_h, xodr.STD_START_CLOTH,
+    end_x, end_y, end_h, xodr.STD_START_CLOTH
+)
+
+# 创建道路几何元素
+roadgeoms = [xodr.Spiral(x.KappaStart, x.KappaEnd, length=x.length) for x in clothoids]
+
+# 创建道路对象
+road = xodr.create_road(roadgeoms, 1, 2, 2)
+```
+
+### 4.2 交通信号添加
+```python
+# 在道路上添加交通信号
+road1.add_signal(xodr.Signal(
+    s=98.0,          # 沿中心线距离起点98米
+    t=-4,            # 横向左偏移4米
+    country="USA",   # 国家标准
+    Type="R1",       # 信号类型（R1=停车标志，红绿灯=1000001）
+    subtype="1"      # 信号子类型
+))
+```
+
+## 5. 场景构建和导出
+
+### 5.1 OpenDRIVE 对象创建
+```python
+# 创建主对象
+odr = xodr.OpenDrive("my road")
+
+# 添加道路
+odr.add_road(road1)
+odr.add_road(road2)
+odr.add_road(road3)
+odr.add_road(road4)
+
+# 添加交叉口
+odr.add_junction_creator(jc)
+
+# 自动调整道路和车道几何位置
+odr.adjust_roads_and_lanes()
+
+# 返回构建好的道路网络
+return odr
+```
+
+### 5.2 主程序执行
+```python
+if __name__ == "__main__":
+    # 创建场景对象
+    sce = Scenario()
+    
+    # 打印XML内容（用于调试）
+    prettyprint(sce.road().get_element())
+    
+    # 生成并保存场景文件到当前目录
+    sce.generate(".")
+```
+
+## 6. 参数说明
+
+### 6.1 道路参数
+- `road_id`: 道路唯一标识符
+- `left_lanes`: 左侧车道数
+- `right_lanes`: 右侧车道数
+- `length`: 道路长度（米）
+
+### 6.2 几何形状参数
+- `Line(length)`: 直线段
+- `Spiral(start_curvature, end_curvature, length)`: 螺旋线段
+- `AdjustablePlanview(length)`: 可调整几何形状
+
+### 6.3 连接参数
+- `ElementType.road`: 连接元素类型
+- `ContactPoint.start/end`: 连接点位置
+- `road_connection`: 连接类型（successor/predecessor）
+
+## 7. 常用信号类型
+- `R1`: 停车标志
+- `1000001`: 红绿灯
+- 其他类型请参考相关标准文档

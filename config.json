@@ -1,9 +1,5 @@
-{"mcpServers": {
-    "RedNote MCP":
-        {"command":"rednote-mcp",
-        "args" : ["--stdio"]
-        }
-    ,
+{
+  "mcpServers": {
     "filesystem": {
         "disabled": false,
         "timeout": 60,
@@ -11,26 +7,22 @@
         "args": [
           "-y",
           "@modelcontextprotocol/server-filesystem",
-          "C:\\Users\\22689\\Desktop",
-          "C:\\Users\\22689\\Downloads",
-          "E:\\tsinghua",
-          "C:\\Users\\22689\\AppData\\Roaming\\Code\\User\\globalStorage\\saoudrizwan.claude-dev\\settings"
+          "C:/Users/22689/Desktop",
+          "C:/Users/22689/Downloads",
+          "E:/tsinghua",
+          "C:/Users/22689/AppData/Roaming/Code/User/globalStorage/saoudrizwan.claude-dev/settings"
         ]
       },
-      "desktop-commander": {
-        "command": "npx",
+      "fastadmin": {
+        "command": "uv",
         "args": [
-          "-y",
-          "@wonderwhy-er/desktop-commander"
-        ]
-      },
-      "postgres": {
-        "command": "npx",
-        "args": [
-          "-y",
-          "@modelcontextprotocol/server-postgres",
-          "postgresql://localhost/mydb"
-        ]
+          "--directory",
+          "./fastapi",
+          "run",
+          "api.py"
+        ],
+        "disabled": false,
+        "alwaysAllow": []
       }
-    }
+  }
 }
