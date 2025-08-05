@@ -1,5 +1,6 @@
 {
   "mcpServers": {
+<<<<<<< HEAD
     "filesystem": {
         "disabled": false,
         "timeout": 60,
@@ -22,6 +23,17 @@
           "api.py"
         ],
         "disabled": false,
+=======
+      "fastadmin": {
+        "command": "uv",
+        "args": [
+          "--directory",
+          "./fastapi",
+          "run",
+          "api.py"
+        ],
+        "disabled": false,
+>>>>>>> 79583af64d6f7a87ef202bfd85e0f27a83322cbc
         "alwaysAllow": []
       }
   }
